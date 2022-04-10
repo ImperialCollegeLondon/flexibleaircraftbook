@@ -150,9 +150,9 @@ def generate_solver_file (route, case_name, case_flow, gravity=9.81):
                                  'min_delta': 1e-8,         # Default 1e-8
                                  'gravity_on': 'on',
                                  'gravity': gravity}
-    config['Modal'] =           {'folder': route + '/output',
-                                 'continuous_eigenvalues': 'on',
+    config['Modal'] =           {'continuous_eigenvalues': 'on',
                                  'NumLambda': 10,
+                                 'rigid_body_modes': 'false',
                                  'write_modes_vtk': 'off'}
     
     config.write()
