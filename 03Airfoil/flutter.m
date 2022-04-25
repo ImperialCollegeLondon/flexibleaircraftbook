@@ -1,6 +1,7 @@
 %
 % flutter.m: Solves dynamic stability of a 2-DoF airfoil in state-space
 %            description.
+%
 % Copyright, Rafael Palacios, June 2018
 %            r.palacios@imperial.ac.uk
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
