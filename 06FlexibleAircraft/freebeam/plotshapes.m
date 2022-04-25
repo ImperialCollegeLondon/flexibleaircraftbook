@@ -3,7 +3,8 @@
 %
 % Copyright, Rafael Palacios, June 2018
 %            r.palacios@imperial.ac.uk
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%clear all, close all
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% clear all, close all
 L=1;
 xrange=0:L/200:L;
 linestyles={'k-','k--','k-.','k:'};
