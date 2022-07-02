@@ -4,7 +4,9 @@
 %
 % Copyright, Rafael Palacios, June 2018
 %            r.palacios@imperial.ac.uk
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Note: For solution in frequency-domain, see flutterpk.m 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all, close all
 
 % Options:
@@ -32,7 +34,8 @@ systh=frd(theod(k)-0.5,k);
 systh4=fitmagfrd(systh,Na,1,Wk)+0.5;
 
 
-% Identify Jones-type approximation.
+% Identify Jones-type approximation. This is not strictly necessary, as
+% we could use directly the transfer function tf(systh4).
 b=-pole(systh4);
 pol=poly(pole(systh4))-poly(zero(systh4))/2;
  
@@ -82,13 +85,13 @@ for kxalpha=1:length(xalpha)
     A_0 = [[0 CLa0qs];[0 0]];
     A_1 = [[CLa0qs CLa1qs+CLa1nc];[0 CMa1qs+CMa1nc]];
     A_2 = [[CLa1nc CLa2nc];[CMa1nc CMa2nc]];
-    A_3 = [[CLa0qs CLa1qs];[0 0]];
+    A_4 = [[CLa0qs CLa1qs];[0 0]];
     
     % State-space matrices for unsteady aero.
     for j=1:Na
       A_a((j-1)*2+1:j*2,(j-1)*2+1:j*2)=-eye(2)*b(j);
       B_a((j-1)*2+1:j*2,1:2)=eye(2);
-      C_a(1:2,(j-1)*2+1:j*2)= a(j)*(b(j)*A_3-A_0);
+      C_a(1:2,(j-1)*2+1:j*2)= a(j)*(b(j)*A_4-A_0);
     end
       
    
@@ -99,14 +102,15 @@ for kxalpha=1:length(xalpha)
     K=[[k_h 0];[0 k_a/(c^2/4)]];
     
     
-    % Loop through the velocities.
-    k=0; Vflutter(kxalpha,komega)=0;
-    for Vinf=0.01:0.005:2   
-       k=k+1;  
+    % Loop through the vthrough the airspeeds up the diverspeed speed.
+    Vinf=0.01;  Vmax=1.77; Vdelta=0.005;  % Range of velocities to explore.
+    kv=0; Vflutter(kxalpha,komega)=1.78;
+    while (Vinf<=Vmax) && (Vflutter(kxalpha,komega)==1.78)
+       kv=kv+1;  
        qinf=1/2*rho*Vinf^2;
 
        M_ae=(4*Vinf^2/c^2)*M - qinf *kappa_g*A_2;
-       C_ae=                 - qinf *kappa_g*(A_1-(1/2)*A_3);
+       C_ae=                 - qinf *kappa_g*(A_1-(1/2)*A_4);
        K_ae=               K - qinf *kappa_g*A_0;
 
        A_ae=[[zeros(2)        eye(2)     zeros(2,2*Na)];
@@ -118,24 +122,25 @@ for kxalpha=1:length(xalpha)
               
        if Flag_plot
          figure(1)
-         if k==1
+         if kv==1
            plot(real(lambda),imag(lambda),'rs','MarkerSize',8), hold on
            grid on
            xlabel('real(2\lambdaV\infty/c)','FontSize',14,'FontWeight','bold')
            ylabel('imag(2\lambdaV\infty/c)','FontSize',14,'FontWeight','bold')
-         elseif mod(k,10)==0
+         elseif mod(kv,10)==0
            plot(real(lambda),imag(lambda),'o')
          else            
            plot(real(lambda),imag(lambda),'.')
          end
-         data.V(k)       =Vinf;
-         data.lambda(k,:)=lambda;   
+         data.V(kv)       =Vinf;
+         data.lambda(kv,:)=lambda;   
        end
        
        % Check if there is a positive root.
-       if Vflutter(kxalpha,komega)==0 && max(real(lambda))>0
+       if max(real(lambda))>0
            Vflutter(kxalpha,komega)=Vinf;
        end
+       Vinf=Vinf+Vdelta;
     end
 
     % V-g plot.
