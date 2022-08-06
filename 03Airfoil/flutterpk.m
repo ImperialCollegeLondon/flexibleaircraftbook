@@ -106,7 +106,7 @@ for kxalpha=1:length(xalpha)
 
            % After convergence, compute the rate of decay and check for
            % stability.
-           gamma(ke,1)= imag(p(ke))/real(p(ke));
+           gamma(ke,1)= real(p(ke))/imag(p(ke));
            if gamma(ke)>0
                Vflutter(kxalpha,komega)=Vinf;
            end
