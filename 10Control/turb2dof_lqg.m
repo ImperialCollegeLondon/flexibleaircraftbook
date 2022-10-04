@@ -204,7 +204,7 @@ for k=1:3
    
    if k>1
        % Create LQG. Measurement is pitch rate. Output is \ddot{flap}.
-       [k1,L1,p1]=kalman (ss_t(4,:),diag([1e-8 1e-2]),1e-6);
+       L1 = lqr(ss_t.A', ss_t.C(4,:)', ss_t.B(:,2)*1e-2*ss_t.B(:,2)' + 1e-8*eye(size(ss_t.A)), 1e-6)';
        [Klqr,Slqr,Elqr] = lqr(ss_t(:,1),Q,1);
        A_lqg=[ss_t.A-ss_t.B(:,1)*Klqr ss_t.B(:,1)*Klqr;
               zeros(size(ss_t.A)) ss_t.A-L1*ss_t.C(4,:)];
