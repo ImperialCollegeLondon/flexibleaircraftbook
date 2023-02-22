@@ -12,31 +12,53 @@ k=0:0.02:50;
 sysse=frd(sears(k),k);
 ssys5=fitmagfrd(sysse,5);
 
-% Step gust.
-[xs5,ys5]= step(ssys5)
+% Step gusts (Kuessner function)
+Tmax=100;
+[xs5,ys5]= step(ssys5,Tmax)
 
-% Jones's approximation.
+% Jones's approximation to the Lift deficiency function.
 a_1=0.165;
 a_2=0.335;
 b_1=0.0455;
 b_2=0.3;
 
+% Select parametrization.
 LineStyles={'k-','k:','k-.','k--'};
-figure, i=0;
-for mu=[5 10 50 100]
-i=i+1;
-A=[-1/(4*mu+1) -2*a_1*b_1/(4*mu+1) -2*a_2*b_2/(4*mu+1);
-    -1 -b_1 0;
-    -1 0 -b_2];
-B=[2/(4*mu+1); 0; 0];
-C=[1 0 0];
-sysgust=ss(A,B,C,[]);
+mulist=[5 20 50 100];
+i=0;
 
-[y, t]=lsim(sysgust,xs5,ys5);
-plot(t(1:end-1),(y(2:end)-y(1:end-1))./(t(2:end)-t(1:end-1)),LineStyles{i},'LineWidth',2)
-hold on
+% Run through all parameters.
+for mu=mulist
+    i=i+1;
+    % Define state-space matrices for current value of mu.
+    A=[-1/(4*mu+1) 2*a_1*b_1/(4*mu+1)  2*a_2*b_2/(4*mu+1);
+        -1 -b_1 0;
+        -1 0 -b_2];
+    B=[2/(4*mu+1); 0; 0];
+    C=[1 0 0];
+    sysgust=ss(A,B,C,[]);
+
+    % Compute the time-history of the velocities
+    [y, t]=lsim(sysgust,xs5,ys5);
+    figure(1)
+    plot(t,y,LineStyles{i},'LineWidth',2)
+    hold on 
+
+    % Compute the time-history of the accelerations
+    ydot=diff(y)*length(t)/Tmax;
+    figure(2)
+    plot(t(1:end-1),2*mu*ydot,LineStyles{i},'LineWidth',2)
+    hold on 
 end
 
-axis([0 50 0 0.1]), grid on
-xlabel('s'), ylabel('d\nu/ds')
-legend('\mu=5','\mu=10','\mu=50','\mu=100')
+figure (1), ylabel('nondim velocity, \nu')
+figure (2), ylabel('gust alleviation factor, 2\mu d\nu/ds')
+
+for i=1:2
+    figure(i),  xlabel('reduced frequency, s'),
+    axis([0 Tmax 0 1]), grid on
+    legend(['\mu=' num2str(mulist(1))], ...
+           ['\mu=' num2str(mulist(2))], ...
+           ['\mu=' num2str(mulist(3))], ...
+           ['\mu=' num2str(mulist(4))])
+end
