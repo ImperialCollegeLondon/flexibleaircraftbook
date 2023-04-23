@@ -1,4 +1,4 @@
-% Function shears. 
+% Function Sears. 
 %  Compute the analytical expression for Sears's function about the 
 %  leading edge in terms of modified Bessel functions of the second kind.
 %
@@ -15,8 +15,8 @@ function S0=sears(k)
          S0(n)=1;
      else
          S0(n)= exp(-i*k(n)) ...
-              .*conj(-1./(i*k(n).*(conj(besselk(0,i*k(n))) ...
-                                  +conj(besselk(1,i*k(n))) )));
+              ./(i*k(n).*(besselk(0,i*k(n)) ...
+                         +besselk(1,i*k(n))) );
      end
   end
 end

@@ -1,5 +1,6 @@
-% Function theosears. 
-%  Plot analytical expressions for Theodorsen's and Sear's functions, 
+% theosears.m 
+%
+%  Plot analytical expressions for Theodorsen's and Sears's functions, 
 %  and compute and compare rational function approximations to both 
 %  functions using fitmagfrd.
 %
