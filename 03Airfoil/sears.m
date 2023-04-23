@@ -10,13 +10,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function S0=sears(k)
+  S0=zeros(size(k));
   for n=1:length(k)
      if k(n)==0
          S0(n)=1;
+     elseif k(n) > 0
+         S0(n)= exp(-1i*k(n)) ...
+              ./(1i*k(n).*(besselk(0,1i*k(n))+besselk(1,1i*k(n))) );
      else
-         S0(n)= exp(-i*k(n)) ...
-              ./(i*k(n).*(besselk(0,i*k(n)) ...
-                         +besselk(1,i*k(n))) );
+         error('Input must be non-negative.')
      end
   end
 end

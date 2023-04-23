@@ -19,11 +19,11 @@ theodm=@(x) theodorsen(x)-0.5;
 tsys=frd(theodm(k),k);
 tsys10=fitmagfrd(tsys,10)
 
-[yt10,xt10]=step(0.5+tsys10)
+[yt10,xt10]=step(0.5+tsys10);
 
 ssys=frd(sears(k),k);
 ssys10=fitmagfrd(ssys,10)
-[ys10,xs10]= step(ssys10)
+[ys10,xs10]= step(ssys10);
 
 
 % Plot results, including Jones approximations

@@ -10,11 +10,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function C=theodorsen(k)
+  C=zeros(size(k));
   for n=1:length(k)
      if k(n)==0
          C(n)=1;
+     elseif k(n) > 0
+         C(n)=besselk(1,1i*k(n))./(besselk(0,1i*k(n))+besselk(1,1i*k(n)));
      else
-         C(n)=besselk(1,i*k(n))./(besselk(0,i*k(n))+besselk(1,i*k(n)));
+         error('Input must be non-negative.')
      end
   end
 end
