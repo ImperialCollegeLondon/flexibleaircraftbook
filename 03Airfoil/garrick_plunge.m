@@ -2,20 +2,21 @@
 %
 % Computes induced drag due to harmonic plunging motions.
 %
+% % Dependencies:
+%    theodorsen.m: Analytical expression for Theodorsen's lift deficiency
+%                  function.
+%
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
-% Latest update: May 2018. 
+% Latest update: April 2023. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 close all, clear all
-
-% Define frequency-domain analytic functions.
-theod=@(xx) besselh(1,2,xx)./(besselh(1,2,xx)+i*besselh(0,2,xx));
 
 linestyles={'b:','b--','b-.','b-'}
 k=[0.25:0.25:1];
 for i=1:length(k)
-    ks=0:0.01:3*pi/2;
+    ks=0:0.01:2*pi;
     h=cos(ks);
-    C=theod(k(i));
+    C=theodorsen(k(i));
     Cd=-2*pi*k(i)^2*(imag(C)*cos(ks)+real(C)*sin(ks)).^2;
     
     plot(h,Cd,linestyles{i},'LineWidth',1), hold on

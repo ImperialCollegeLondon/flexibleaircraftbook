@@ -2,14 +2,17 @@
 % Plot transfer function between angle of incidence and lift using 
 % unsteady thin aerofoil theory.
 %
+% Dependencies:
+%    theodorsen.m: Analytical expression for Theodorsen's lift deficiency
+%                  function.
+%
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
-% Latest update: August 2014. 
+% Latest update: April 2023. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all, close all
 
-% Theodorsen function and function between AoA and lift.
-theod=@(xx) besselh(1,2,xx)./(besselh(1,2,xx)+i*besselh(0,2,xx));
-GLa=@(xx,nu) 2*pi*theod(xx).*(1+i*xx*(1/2-nu))+pi*(i*xx+nu*xx.^2);
+% Define transfer function between AoA and lift.
+GLa=@(xx,nu) 2*pi*theodorsen(xx).*(1+i*xx*(1/2-nu))+pi*(i*xx+nu*xx.^2);
 
 % Plot transfer function
 figure 
@@ -18,7 +21,7 @@ for nu_ea=0:-0.25:-1;
   subplot(2,1,1)
    plot(k,abs(GLa(k,nu_ea)/2/pi),'-','Color',[0 1 1]*abs(nu_ea/1.2), 'LineWidth',2), hold on
   subplot(2,1,2)
-   plot(k,phase(GLa(k,nu_ea))*180/pi,'-','Color',[0 1 1]*abs(nu_ea/1.2), 'LineWidth',2), hold on
+   plot(k,angle(GLa(k,nu_ea))*180/pi,'-','Color',[0 1 1]*abs(nu_ea/1.2), 'LineWidth',2), hold on
 end
 
 % Write legends.
@@ -33,7 +36,7 @@ subplot(2,1,2)
 % Plot time-history of alpha vs. CL for varying k.
 figure
 nu_ea=0.25;
-theta=0:0.001:pi/2;  % Full cycle in k*s.
+theta=0:0.001:2*pi;  % Full cycle in k*s.
 alpha=cos(theta);
 
 k=0.01; plot(alpha,real(GLa(k,nu_ea)*exp(i*theta))/2/pi,'b--','LineWidth',2), hold on

@@ -2,6 +2,10 @@
 % flutterpk.m: Solves dynamic stability of a 2-DoF airfoil using the pk
 %              method.
 %
+% Dependencies:
+%    theodorsen.m: Analytical expression for Theodorsen's lift deficiency
+%                  function.
+%
 % Copyright, Rafael Palacios, July 2022
 %            r.palacios@imperial.ac.uk
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20,10 +24,6 @@ mu=5;
 r_a =0.25*c;
 x_ac=0.25*c;
 x_ea=0.35*c;
-
-% Define Theodorsen function.
-theod=@(xx) besselh(1,2,xx)./(besselh(1,2,xx)+i*besselh(0,2,xx));
-
 
 %% Loop through the parameters in the problem.
 for komega=1:length(omega_ratio)
@@ -59,7 +59,7 @@ for kxalpha=1:length(xalpha)
     jGAF=0; GAFk=[0:0.1:5]+.0001;  % GAFs at k=0 give problems.
     for kr=GAFk
         jGAF=jGAF+1;
-        GAF(jGAF,:,:)=kappa_g*(theod(kr) * (A_0+i*kr*A_4)+ ...
+        GAF(jGAF,:,:)=kappa_g*(theodorsen(kr) * (A_0+i*kr*A_4)+ ...
                                i*kr*(A_1-A_4) - kr^2*A_2);
     end
 

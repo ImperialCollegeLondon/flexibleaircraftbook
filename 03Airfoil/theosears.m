@@ -3,7 +3,10 @@
 %  and compute and compare rational function approximations to both 
 %  functions using fitmagfrd.
 %
-%  Sears and Theodorsen's functions are in sears.m and theodorsen.m
+% Dependencies:
+%    theodorsen.m: Analytical expression for Theodorsen's lift deficiency
+%                  function.
+%    sears.m: Analytical expression for Sears's function.
 %
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
 % Latest update: April 2023. 

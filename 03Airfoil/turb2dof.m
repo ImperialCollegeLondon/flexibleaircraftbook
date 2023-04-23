@@ -1,7 +1,12 @@
 %
-% turb2dof.m: Continuous turbulence response of 2-DoF airfoil.
+% turb2dof.m: Continuous turbulence response of 2-DoF airfoil using 
+%             Jones's approximation to Sears' function.
 %
-% Copyright, Rafael Palacios, June 2018
+% Dependencies:
+%    theodorsen.m: Analytical expression for Theodorsen's lift deficiency
+%                  function.
+%
+% Copyright, Rafael Palacios, April 2023
 %            r.palacios@imperial.ac.uk
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all, close all
@@ -25,12 +30,11 @@ DeltaFreq=0.002;      % Delta of omega/omega_\alpha
 
 
 %% Obtain a rational-function approximation to Theodorsen:
-theod=@(xx) besselh(1,2,xx)./(besselh(1,2,xx)+i*besselh(0,2,xx));
 deltak=0.01;
 k=0:deltak:5;
 Wk=ones(size(k));
 Wk(1:1/deltak)=100;
-systh=frd(theod(k)-0.5,k);
+systh=frd(theodorsen(k)-0.5,k);
 systh4=fitmagfrd(systh,Na,1,Wk)+0.5;
 
 
@@ -59,7 +63,7 @@ end
 clear A pol
 
 
-%% Use Jones' approximation to Sears.
+%% Use Jones' approximation to Sears's function.
 a_g=[0.5 0.5]';
 b_g=[0.13 1.0]';
 Ng=2;
@@ -258,5 +262,4 @@ figure(4)
  r =sigma12(end)/(s1*s2);
  
 
- 
  % eof

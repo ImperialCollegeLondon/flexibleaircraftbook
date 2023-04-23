@@ -2,26 +2,27 @@
 %
 % Compute step responses to pitch and gust inputs.
 %
+% Dependencies:
+%    theodorsen.m: Analytical expression for Theodorsen's lift deficiency
+%                  function.
+%    sears.m: Analytical expression for Sears's function.
+%
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
-% Latest update: August 2014. 
+% Latest update: April 2023. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-clear all
+clear all, close all
 
 % Obtain RFA approximation to Theodorsen's function. Remove asymptotic
-% value of C(k) as k->infty to speed convergence.
+% value of C(k) as k->infty to speed up convergence.
 k=0:0.0005:20;
-theod=@(x) besselh(1,2,x)./(besselh(1,2,x)+i*besselh(0,2,x))-0.5;
-tsys=frd(theod(k),k);
+theodm=@(x) theodorsen(x)-0.5;
+tsys=frd(theodm(k),k);
 tsys10=fitmagfrd(tsys,10)
 
-figure
 [yt10,xt10]=step(0.5+tsys10)
 
-
-sears=@(x) conj(2./(pi.*x.*(besselh(0,x)+i*besselh(1,x))));
 ssys=frd(sears(k),k);
 ssys10=fitmagfrd(ssys,10)
-figure
 [ys10,xs10]= step(ssys10)
 
 

@@ -2,8 +2,12 @@
 % flutter.m: Solves dynamic stability of a 2-DoF airfoil in state-space
 %            description.
 %
-% Copyright, Rafael Palacios, June 2018
+% Copyright, Rafael Palacios, April 2023
 %            r.palacios@imperial.ac.uk
+%
+% Dependencies:
+%    theodorsen.m: Analytical expression for Theodorsen's lift deficiency
+%                  function.
 %
 % Note: For solution in frequency-domain, see flutterpk.m 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -25,7 +29,7 @@ x_ea=0.35*c;
 
 
 %% Obtain a rational-function approximation to Theodorsen:
-theod=@(xx) besselh(1,2,xx)./(besselh(1,2,xx)+i*besselh(0,2,xx));
+theod=@(xx) theodorsen(xx);
 deltak=0.01;
 k=0:deltak:5;
 Wk=ones(size(k));

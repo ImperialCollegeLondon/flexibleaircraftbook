@@ -1,12 +1,16 @@
 %
-% gust_1cos: Compute 1-cos response for 1-DoF airfoil.
+% gust_1cos: Compute 1-cos response for 1-DoF airfoil, using Jones's
+%            approximation for Theodorsen's lift deficiency function.
+%
+% Dependencies:
+%    sears.m: Analytical expression for Sears's function.
 %
 % Copyright, Rafael Palacios, June 2018
 %            r.palacios@imperial.ac.uk
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% clear all, close all 
+clear all, close all 
 
-% Jones's approximation.
+% Coefficients in Jones's approximation for C(ik)
 a_1=0.165;
 a_2=0.335;
 b_1=0.0455;
@@ -14,7 +18,6 @@ b_2=0.3;
 
 
 % Obtain RFA approximation to Sears
-sears=@(x) conj(2./(pi.*x.*(besselh(0,x)+i*besselh(1,x)))).*exp(-i*x);
 k=0:0.02:50;
 sysse=frd(sears(k),k);
 ssys5=fitmagfrd(sysse,5);
