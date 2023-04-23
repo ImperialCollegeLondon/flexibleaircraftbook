@@ -3,14 +3,15 @@
 %  and compute and compare rational function approximations to both 
 %  functions using fitmagfrd.
 %
+%  Sears and Theodorsen's functions are in sears.m and theodorsen.m
+%
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
-% Latest update: May 2018. 
+% Latest update: April 2023. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 close all, clear all
 
-% Define frequency-domain analytic functions.
-sears=@(x) conj(2./(pi.*x.*(besselh(0,x)+i*besselh(1,x)))).*exp(-i*x);
-theod=@(xx) besselh(1,2,xx)./(besselh(1,2,xx)+i*besselh(0,2,xx));
+% Redefine Theodorsen's function
+theod=@(xx) theodorsen(xx);
 
 % Bode plots.
 k=0:0.0005:3;
@@ -23,8 +24,8 @@ subplot(2,1,1)
  grid on
  
 subplot(2,1,2)
- plot(k,phase(theod(k))*180/pi,'b-', 'LineWidth',2), hold on
- plot(k,phase(sears(k))*180/pi,'k--','LineWidth',2)
+ plot(k,angle(theod(k))*180/pi,'b-', 'LineWidth',2), hold on
+ plot(k,angle(sears(k))*180/pi,'k--','LineWidth',2)
  xlabel('Reduced frequency, k','FontSize',12,'FontWeight','bold')
  ylabel('Phase (deg)','FontSize',12,'FontWeight','bold')
  axis([0 3 -45 0])
@@ -50,7 +51,7 @@ subplot(2,1,1)
  ylabel('Magnitude (abs)','FontSize',12,'FontWeight','bold')
  axis([0 2 0 1])
 subplot(2,1,2)
- plot(k,phase(theod(k))*180/pi,'b-', 'LineWidth',1), hold on
+ plot(k,angle(theod(k))*180/pi,'b-', 'LineWidth',1), hold on
  xlabel('Reduced frequency, k','FontSize',12,'FontWeight','bold')
  ylabel('Phase (deg)','FontSize',12,'FontWeight','bold')
  axis([0 2 -20 0])
@@ -98,7 +99,7 @@ subplot(2,1,1)
  ylabel('Magnitude (abs)','FontSize',12,'FontWeight','bold')
  axis([0 2 0 1]), grid on
 subplot(2,1,2)
- plot(k,phase(sears(k))*180/pi,'b-', 'LineWidth',1), hold on
+ plot(k,angle(sears(k))*180/pi,'b-', 'LineWidth',1), hold on
  xlabel('Reduced frequency, k','FontSize',12,'FontWeight','bold')
  ylabel('Phase (deg)','FontSize',12,'FontWeight','bold')
  axis([0 2 -45 0]), grid on
