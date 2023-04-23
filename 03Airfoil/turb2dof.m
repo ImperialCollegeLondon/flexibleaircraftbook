@@ -18,7 +18,7 @@ r_a =0.25*c;
 x_ac=0.25*c;
 x_ea=0.35*c;
 omega_ratio=0.5;      % Ratio of pitch/plunge frequencies.
-xalpha=0.2;           % Nondimensional position of cg.
+xalpha=0.2;           % Nondimensional position of cg (in semichords from e.a.)
 
 lturb=1*c;             % Turbulence length scale.
 
@@ -122,8 +122,7 @@ k=0;
 linestyles={'b:','b--','b-.','b-'};
 freqs=[0:DeltaFreq:MaxFreq]; % Physical frequencies for plots.
 
-%Vinflist=0.01:0.01:1.04;
-Vinflist=0.2:0.2:0.8;
+Vinflist=0.2:0.2:0.8; % Vinflist=0.01:0.01:1.04;
 for Vinf=Vinflist
    k=k+1;
    if k>4, linestyles{k}='k-'; end
@@ -211,7 +210,7 @@ for Vinf=Vinflist
        ylabel('\Phi_\alpha','FontSize',14,'FontWeight','Bold')
        axis([0 2 0 3])
        
-    % Plot coherence.
+    % Show that there is perfect coherence.
     figure(3)
      subplot(1,2,1)
        plot (freqs,squeeze((abs(psd_ae(1,2,:)))).^2./(PSDeta.*PSDalpha),linestyles{k},'LineWidth',1)
@@ -238,6 +237,7 @@ for k=1:3
 end
 
 % Plot PSDs
+% (for a high density plot, use Vinflist=0.01:0.01:1.04 above)
 figure(4)
  subplot(2,1,1)
  plot(Vinflist,sigma1,'b-','LineWidth',2)
