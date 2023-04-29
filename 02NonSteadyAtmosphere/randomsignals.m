@@ -1,27 +1,31 @@
-% Function randomsignals. 
-%  Examples for random processes(using coloured Gaussian noise).
+% randomsignals.m 
+%  Examples for random processes (using coloured Gaussian noise).
 %
 %  Notes:
 %   - Every time the function is called, it will generate a different 
 %     time history.
 %
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
-% Latest update: April 2016. 
-%%%%%%%%%%%%%%%%%%%
+% Latest update: April 2023. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 close all, clear all
 
-%% TFs and corresponding state-space models.
+%% Correlation function
+% We choose first two transfer functions that will be used to shape
+% the white noise, and compute their corresponding state-space models.
 %
-% von Karman turbulence filter in w direction with Campbell's RFA.
+% First TF is von Karman turbulence filter (in the w direction) obtained
+% with Campbell's Rational Function Approximation.
+
 G1= tf([sqrt(8/3) 1],[1 1]) ...
   * tf([91/12 52 60],[935/216 561/12 102 60]);
 sys1=ss(G1,'minimal');
 
-% Second TF is simply 1/(s+10)
+% Second transfer function is simply 1/(s+10)
 G2nodelay= tf([1],[1 10]);
 sys2=ss(G2nodelay,'minimal');
 
-% rms for each signal.
+% Determine rms for each signal.
 sigma_1=0.9;
 sigma_2=0.75;
 
@@ -32,7 +36,8 @@ dt=0.001;             % Time step.
 t=0:dt:Ntimes*dt;
 Nlags=2500;
 
-% Add 0.5 s delay on w2 with respect to w1.
+% Add 0.5 s delay on w2 with respect to w1. Just because we want to see 
+% its effect. Remove to see how the results change.
 Ndelay=500;
 TimeDelay=Ndelay*dt; % Delay on w2
 
@@ -44,17 +49,18 @@ n=randn(Ntimes+Ndelay+1,1);  % White noise.
 [w1,t1]=lsim(sys1,n(Ndelay+1:Ndelay+Ntimes+1,1),t,'foh');
 norm_w1=rms(w1);
 w1=sigma_1*w1/norm_w1;
-[r1,lag1]=xcorr(w1,Nlags,'unbiased');
 
 [w2,t2]=lsim(sys2,n(1:Ntimes+1,1),t,'foh'); 
 norm_w2=rms(w2);
 w2=sigma_2*w2/norm_w2;
-[r2,lag2]=xcorr(w2,Nlags,'unbiased');
 
+% Compute the correlation function (a 2x2 matrix function in this problem)
+[r1,lag1]=xcorr(w1,Nlags,'unbiased');
+[r2,lag2]=xcorr(w2,Nlags,'unbiased');
 [r12,lag12]=xcorr(w1,w2,Nlags,'unbiased');
 [r21,lag21]=xcorr(w2,w1,Nlags,'unbiased');
 
-% Plot only up to t=10.
+% Plot time histories of both signals only up to t=10.
 figure
 subplot(2,1,1)
  plot(t1,w1,'k')
@@ -66,6 +72,7 @@ subplot(2,1,2)
  xlabel('t [s]','FontSize',14,'FontWeight','bold')
  ylabel('w_2','FontSize',14,'FontWeight','bold')
  
+% Plot the correlation function.
 figure 
 subplot(2,2,1)
  plot(lag1*dt,r1,'LineWidth',2)
@@ -87,12 +94,15 @@ subplot(2,2,3)
  xlabel('\tau [s]','FontSize',14,'FontWeight','bold')
 
 
+ % Compute the integral time scale for each of the signals.
  T1=trapz(lag1(Nlags+1:end)*dt,r1(Nlags+1:end))
  %subplot(2,2,1), ax = gca; ax.XTick= T1;
  
  T2=trapz(lag2(Nlags+1:end)*dt,r2(Nlags+1:end))
  %subplot(2,2,4), ax = gca; ax.XTick= T2;
  
+ % Compute the time delay between both signals (note that this was
+ % introduced ``by hand'' with Ndelay).
  [~,I] = max(abs(r12));
  timeDiff=lag12(I)*dt;
  %subplot(2,2,2), ax = gca; ax.XTick= timeDiff;
@@ -100,10 +110,14 @@ subplot(2,2,3)
 
  
  
-%% Spectral analysis
- 
+%% Spectral Description
+% For convenience, we aggregagate both transfer functions to define 
+% a system with two inputs and two outputs.
 G=tf(parallel(sys1,G2nodelay,1,1,[],[]));
 
+% Compute the PSDs. Since we have the transfer functions, we use
+% the spectral factorization theorem. If TFs were not avaialble, we would
+% need to carry an fft of the correlation functions above.
 PSD(1,1)=G(1,1)*ctranspose(G(1,1));
 PSD(1,2)=G(2,1)*ctranspose(G(1,1));
 PSD(2,1)=G(1,1)*ctranspose(G(2,1));
@@ -112,9 +126,12 @@ omega=[0:0.1:20];
 [magPSD,phasePSD]=bode(PSD,omega);
 PhaseDelay=unwrap(angle(exp(-j*omega/2)))*180/2/pi;  
 
+% Compute norms.
 Phi1_norm=trapz(omega,squeeze(magPSD(1,1,:)));
 Phi2_norm=trapz(omega,squeeze(magPSD(2,2,:)));
 
+
+% Plot results.
 figure
  subplot(4,2,1)
  plot(omega,sigma_1*sigma_1*squeeze(magPSD(1,1,:))/Phi1_norm,'LineWidth',2)
@@ -153,7 +170,8 @@ figure
  axis([0 20 -30 30])
  xlabel('\omega [rad/s]')
  
- % Coherence
+ % Compute the coherence. It is equal to 1 since both signals came from 
+ % the same white noise...
  figure
   for i=1:length(omega)
       coh12(i)=magPSD(1,2,i)^2/(magPSD(1,1,i)*magPSD(2,2,i));
