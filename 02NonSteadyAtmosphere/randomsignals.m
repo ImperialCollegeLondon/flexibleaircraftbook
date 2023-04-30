@@ -25,7 +25,7 @@ sys1=ss(G1,'minimal');
 G2nodelay= tf([1],[1 10]);
 sys2=ss(G2nodelay,'minimal');
 
-% Determine rms for each signal.
+% Select rms for each signal.
 sigma_1=0.9;
 sigma_2=0.75;
 
@@ -34,7 +34,8 @@ Ntimes=10000000;      % Number of time steps (very long, so that the
                       % the statistics are representative).
 dt=0.001;             % Time step. 
 t=0:dt:Ntimes*dt;
-Nlags=2500;
+Nlags=4096;           % Defines the length of the correlation function
+                      % (chosen as a multiple of 2 to do fft later).
 
 % Add 0.5 s delay on w2 with respect to w1. Just because we want to see 
 % its effect. Remove to see how the results change.
@@ -59,6 +60,18 @@ w2=sigma_2*w2/norm_w2;
 [r2,lag2]=xcorr(w2,Nlags,'unbiased');
 [r12,lag12]=xcorr(w1,w2,Nlags,'unbiased');
 [r21,lag21]=xcorr(w2,w1,Nlags,'unbiased');
+
+% Alternatively, the integral defining the correlation function can be
+% computed directly as the commented operations below (for \Phi_{11}), but 
+% xcorr includes an optimized algorithm that is a lot faster.
+
+% tlag=0;
+% for k=1:Nlag+1
+%     r1(k)=(1/(Ntimes-k))*sum(w1(k:Ntimes).*w1(1:Ntimes+1-k));
+%     lag1(k)=tlag;
+%     tlag=tlag+dt;
+% end
+    
 
 % Plot time histories of both signals only up to t=10.
 figure
@@ -109,14 +122,14 @@ subplot(2,2,3)
  %subplot(2,2,3), ax = gca; ax.XTick=-timeDiff;
 
  
- 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 %% Spectral Description
 % For convenience, we aggregagate both transfer functions to define 
 % a system with two inputs and two outputs.
 G=tf(parallel(sys1,G2nodelay,1,1,[],[]));
 
 % Compute the PSDs. Since we have the transfer functions, we use
-% the spectral factorization theorem. If TFs were not avaialble, we would
+% the spectral factorization theorem. If TFs were not available, we would
 % need to carry an fft of the correlation functions above.
 PSD(1,1)=G(1,1)*ctranspose(G(1,1));
 PSD(1,2)=G(2,1)*ctranspose(G(1,1));
