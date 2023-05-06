@@ -17,7 +17,7 @@ close all, clear all
 % Redefine Theodorsen's function
 theod=@(xx) theodorsen(xx);
 
-% Bode plots.
+% Bode plots for Theodorsen's and Sears's functions.
 k=0:0.0005:3;
 figure
 subplot(2,1,1)
@@ -38,13 +38,24 @@ subplot(2,1,2)
 
 
 %% Rational function approximations to Theodorsen.
+% Determine the reduced frequencies at which C(ik) will be sampled.
 deltak=0.01;
 k=0:deltak:5;
+% Give more weight in the fitting process to the values of C(ik) for k<1,
+% where we know the model is good at capturing the physics. 
 Wk=ones(size(k));
 Wk(1:1/deltak)=100;
+% Sampled transfer function, removing the value as k-> infinity.
 systh=frd(theod(k)-0.5,k);
+
+% Obtained a minimum phase SS approximation for C(ik) of dimensions 2 and 4
 systh2=fitmagfrd(systh,2,1,Wk)+0.5;
 systh4=fitmagfrd(systh,4,1,Wk)+0.5;
+
+% Write in zero-pole-gain form
+zpk(systh2)
+
+% Compute Jones's rational-function approximation.
 jones=1-tf([0.165 0], [1 0.0455])-tf([0.335 0], [1 0.3]);
 
 % Bode plots.

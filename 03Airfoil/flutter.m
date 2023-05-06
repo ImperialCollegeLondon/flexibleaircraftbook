@@ -2,7 +2,7 @@
 % flutter.m: Solves dynamic stability of a 2-DoF airfoil in state-space
 %            description.
 %
-% Copyright, Rafael Palacios, April 2023
+% Copyright, Rafael Palacios, May 2023
 %            r.palacios@imperial.ac.uk
 %
 % Dependencies:
@@ -17,7 +17,7 @@ clear all, close all
 omega_ratio=0.005:0.005:2;  % Ratio of pitch/plunge frequencies.
 xalpha=[0 0.05 0.1 0.2];    % Nondimensional position of cg.
 
-Na=4;                       % Order of the RFA (Na<6)
+Na=4;                       % Order of the RFA.
 Flag_plot=0;                % Plot root locus for each parameter values.
 
 % Constants:
@@ -35,33 +35,29 @@ k=0:deltak:5;
 Wk=ones(size(k));
 Wk(1:1/deltak)=100;
 systh=frd(theod(k)-0.5,k);
-systh4=fitmagfrd(systh,Na,1,Wk)+0.5;
+systh_Na=fitmagfrd(systh,Na,1,Wk)+0.5;
 
-
-% Identify Jones-type approximation. This is not strictly necessary, as
-% we could use directly the transfer function tf(systh4).
-b=-pole(systh4);
-pol=poly(pole(systh4))-poly(zero(systh4))/2;
- 
- A=zeros(Na);
- for i1=1:Na
-     A(1,i1)=A(1,i1)+1;
-     for i2=1:Na, if i2 ~= i1
-      A(2,i1)=A(2,i1)+b(i2);
-     for i3=1:Na, if i3<i2 && i3~=i1
-      A(3,i1)=A(3,i1)+b(i2)*b(i3);
-     for i4=1:Na, if i4<i3 && i4<i2 && i4~=i1
-      A(4,i1)=A(4,i1)+b(i2)*b(i3)*b(i4);
-     for i5=1:Na, if i5<i4 && i5<i3 && i5<i2 && i5~=i1
-      A(5,i1)=A(5,i1)+b(i2)*b(i3)*b(i4)*b(i5);
-     end, end, end, end, end, end, end, end
- end
-a=A\pol(1:Na)';
-% Check that the sum of a is 0.5, which is not enforced.
-if abs(sum(a)-0.5) > 0.01
-    stop 'Needs a better RFA'
+% We rewrite this expression as 1-sum_j((aj*x)(bj+x). The new coefficients
+% result from a linear transformation from the poles and zeros by 
+% equating both expressions. This is done next usign symbolic algebra.
+% First, the b_j coefficients are the poles of the SS obtained above.
+b=-pole(systh_Na);
+syms x
+aj=sym('a',[1 Na]);  % Our unknowns
+bj=sym('b',[1 Na]);  % We know this one, but we keep symbolic for now.
+C1=1;  % C1 stores the RFA in terms of aj and bj.
+C2=1;  % C2 stores the denominator of the zpk form.
+for j=1:Na
+    C1=C1-aj(j)*x/(bj(j)+x);
+    C2=C2*(bj(j)+x);
 end
-clear A pol
+CC=subs(coeffs(collect(C1*C2,x),x),bj,b');  
+eqs=poly(zero(systh_Na))/2 - CC(end:-1:1);
+[AA,bb]=equationsToMatrix(eqs(1:Na),aj);
+
+% Solve the equation in the a_j coefficients.
+a=double(AA\bb);
+
 
 %% Loop through the parameters in the problem.
 for komega=1:length(omega_ratio)
