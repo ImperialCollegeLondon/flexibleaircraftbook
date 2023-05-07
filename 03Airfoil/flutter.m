@@ -1,62 +1,37 @@
 %
 % flutter.m: Solves dynamic stability of a 2-DoF airfoil in state-space
-%            description.
+%            description. Example 3.3 of Palacios & Cesnik's book.
 %
 % Copyright, Rafael Palacios, May 2023
 %            r.palacios@imperial.ac.uk
 %
 % Dependencies:
-%    theodorsen.m: Analytical expression for Theodorsen's lift deficiency
-%                  function.
+%    theodorsen_ajbj.m: Coefficients of the RFA of Theodorsen's lift 
+%                       deficiency function.
 %
 % Note: For solution in frequency-domain, see flutterpk.m 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all, close all
 
-% Options:
+% Parametric variations:
 omega_ratio=0.005:0.005:2;  % Ratio of pitch/plunge frequencies.
 xalpha=[0 0.05 0.1 0.2];    % Nondimensional position of cg.
 
+% Options.
 Na=4;                       % Order of the RFA.
 Flag_plot=0;                % Plot root locus for each parameter values.
 
-% Constants:
-rho=1; c=1; omega_a=1;   % Non-dim results are independent of this choice.
+% Problem constants:
+rho=1; c=1; omega_a=1;     % Non-dim results are independent of this choice.
 mu=5;
 r_a =0.25*c;
 x_ac=0.25*c;
 x_ea=0.35*c;
 
-
-%% Obtain a rational-function approximation to Theodorsen:
-theod=@(xx) theodorsen(xx);
-deltak=0.01;
-k=0:deltak:5;
-Wk=ones(size(k));
-Wk(1:1/deltak)=100;
-systh=frd(theod(k)-0.5,k);
-systh_Na=fitmagfrd(systh,Na,1,Wk)+0.5;
-
-% We rewrite this expression as 1-sum_j((aj*x)(bj+x). The new coefficients
-% result from a linear transformation from the poles and zeros by 
-% equating both expressions. This is done next usign symbolic algebra.
-% First, the b_j coefficients are the poles of the SS obtained above.
-b=-pole(systh_Na);
-syms x
-aj=sym('a',[1 Na]);  % Our unknowns
-bj=sym('b',[1 Na]);  % We know this one, but we keep symbolic for now.
-C1=1;  % C1 stores the RFA in terms of aj and bj.
-C2=1;  % C2 stores the denominator of the zpk form.
-for j=1:Na
-    C1=C1-aj(j)*x/(bj(j)+x);
-    C2=C2*(bj(j)+x);
-end
-CC=subs(coeffs(collect(C1*C2,x),x),bj,b');  
-eqs=poly(zero(systh_Na))/2 - CC(end:-1:1);
-[AA,bb]=equationsToMatrix(eqs(1:Na),aj);
-
-% Solve the equation in the a_j coefficients.
-a=double(AA\bb);
+% Obtain a rational-function approximation to Theodorsen:
+a=zeros(1,Na);
+b=zeros(1,Na);
+[a,b]=theodorsen_ajbj(Na)
 
 
 %% Loop through the parameters in the problem.

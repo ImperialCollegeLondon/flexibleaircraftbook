@@ -7,6 +7,7 @@
 % Dependencies:
 %    theodorsen.m: Analytical expression for Theodorsen's lift deficiency
 %                  function.
+%    theodorsen_rfa.m: RFA to Theodorsen's function.
 %    sears.m: Analytical expression for Sears's function.
 %
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
@@ -38,19 +39,9 @@ subplot(2,1,2)
 
 
 %% Rational function approximations to Theodorsen.
-% Determine the reduced frequencies at which C(ik) will be sampled.
-deltak=0.01;
-k=0:deltak:5;
-% Give more weight in the fitting process to the values of C(ik) for k<1,
-% where we know the model is good at capturing the physics. 
-Wk=ones(size(k));
-Wk(1:1/deltak)=100;
-% Sampled transfer function, removing the value as k-> infinity.
-systh=frd(theod(k)-0.5,k);
-
-% Obtained a minimum phase SS approximation for C(ik) of dimensions 2 and 4
-systh2=fitmagfrd(systh,2,1,Wk)+0.5;
-systh4=fitmagfrd(systh,4,1,Wk)+0.5;
+% Obtain a minimum phase SS approximation for C(ik) of dimensions 2 and 4
+systh2=theodorsen_rfa(2);
+systh4=theodorsen_rfa(4);
 
 % Write in zero-pole-gain form
 zpk(systh2)
