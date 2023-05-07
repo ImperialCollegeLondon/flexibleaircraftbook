@@ -1,26 +1,30 @@
+% gust_step.m
+%  
+%    Response of an unsupported airfoil to a sharped-edged gust.
 %
-% gust_step: Response of an unsupported airfoil to a sharped-edged gust.
+% Dependencies:
+%    theodorsen_ajbj.m: aj & bj coefficients of RFA to Theodorsen.
+%    sears_rfa.m: RFA to Sears's function.
 %
-% Copyright, Rafael Palacios, June 2018
+% Copyright, Rafael Palacios, May 2023
 %            r.palacios@imperial.ac.uk
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all, close all 
 
 % Obtain RFA approximation to Sears
-sears=@(x) conj(2./(pi.*x.*(besselh(0,x)+i*besselh(1,x)))).*exp(-i*x);
-k=0:0.02:50;
-sysse=frd(sears(k),k);
-ssys5=fitmagfrd(sysse,5);
+ssys5=sears_rfa(5);
 
 % Step gusts (Kuessner function)
 Tmax=100;
 [xs5,ys5]= step(ssys5,Tmax)
 
-% Jones's approximation to the Lift deficiency function.
-a_1=0.165;
-a_2=0.335;
-b_1=0.0455;
-b_2=0.3;
+% RFA of Theodorsen's Lift deficiency function.
+[a,b]=theodorsen_ajbj(2);
+a_1=a(1); a_2=a(2); b_1=b(1);b_2=b(2);
+
+% Uncomment to use Jones's coefficients instead.
+% a_1=0.165; a_2=0.335; b_1=0.0455; b_2=0.3;
+
 
 % Select parametrization.
 LineStyles={'k-','k:','k-.','k--'};
@@ -44,13 +48,14 @@ for mu=mulist
     plot(t,y,LineStyles{i},'LineWidth',2)
     hold on 
 
-    % Compute the time-history of the accelerations
+    % Compute the time-history of the normalized accelerations
     ydot=diff(y)*length(t)/Tmax;
     figure(2)
     plot(t(1:end-1),2*mu*ydot,LineStyles{i},'LineWidth',2)
     hold on 
 end
 
+% Add labels to the figures.
 figure (1), ylabel('nondim velocity, \nu')
 figure (2), ylabel('gust alleviation factor, 2\mu d\nu/ds')
 

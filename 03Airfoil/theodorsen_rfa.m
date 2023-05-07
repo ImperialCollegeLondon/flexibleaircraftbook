@@ -21,7 +21,7 @@ function sysC=theodorsen_rfa(Na)
     % robust to this choice.
     deltak=0.01;
     k=0:deltak:5;
-    k=[k 100]
+    k=[k 100];
 
     % Add extra weight to the samples for k<1
     Wk=ones(size(k));

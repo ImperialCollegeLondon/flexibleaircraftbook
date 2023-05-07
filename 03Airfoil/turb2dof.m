@@ -3,8 +3,7 @@
 %             Jones's approximation to Sears' function.
 %
 % Dependencies:
-%    theodorsen.m: Analytical expression for Theodorsen's lift deficiency
-%                  function.
+%    theodorsen_ajbj.m: aj & bj coefficients of RFA to Theodorsen.
 %
 % Copyright, Rafael Palacios, April 2023
 %            r.palacios@imperial.ac.uk
@@ -22,54 +21,23 @@ xalpha=0.2;           % Nondimensional position of cg (in semichords from e.a.)
 
 lturb=1*c;             % Turbulence length scale.
 
-
-Na=4;                 % Order of the RFA (Na<6)
+Na=4;                 % Order of the RFA
+Ng=5;
 
 MaxFreq=5;            % Max value of omega/omega_\alpha
 DeltaFreq=0.002;      % Delta of omega/omega_\alpha
 
 
-%% Obtain a rational-function approximation to Theodorsen:
-deltak=0.01;
-k=0:deltak:5;
-Wk=ones(size(k));
-Wk(1:1/deltak)=100;
-systh=frd(theodorsen(k)-0.5,k);
-systh4=fitmagfrd(systh,Na,1,Wk)+0.5;
+% Obtain a rational-function approximation to Theodorsen:
+[a,b]=theodorsen_ajbj(Na);
 
+% Use Jones' approximation to Sears's function.
+[a_g, b_g]=sears_ajbj(Ng);
+%a_g=[0.5 0.5]'; b_g=[0.13 1.0]'; Ng=2 % Uncomment for Jones coefficients.
 
-% Identify Jones-type approximation.
-b=-pole(systh4);
-pol=poly(pole(systh4))-poly(zero(systh4))/2;
- 
- A=zeros(Na);
- for i1=1:Na
-     A(1,i1)=A(1,i1)+1;
-     for i2=1:Na, if i2 ~= i1
-      A(2,i1)=A(2,i1)+b(i2);
-     for i3=1:Na, if i3<i2 && i3~=i1
-      A(3,i1)=A(3,i1)+b(i2)*b(i3);
-     for i4=1:Na, if i4<i3 && i4<i2 && i4~=i1
-      A(4,i1)=A(4,i1)+b(i2)*b(i3)*b(i4);
-     for i5=1:Na, if i5<i4 && i5<i3 && i5<i2 && i5~=i1
-      A(5,i1)=A(5,i1)+b(i2)*b(i3)*b(i4)*b(i5);
-     end, end, end, end, end, end, end, end
- end
-a=A\pol(1:Na)';
-% Check that the sum of a is 0.5, which is not enforced.
-if abs(sum(a)-0.5) > 0.01
-    stop 'Needs a better RFA'
-end
-clear A pol
-
-
-%% Use Jones' approximation to Sears's function.
-a_g=[0.5 0.5]';
-b_g=[0.13 1.0]';
-Ng=2;
-
-%% Von Karman turbulence PSD.
-PSDKarman=@(xx) ((2*lturb)/pi)*(1+(8/3)*(2*1.339*lturb*xx).^2) ./ ((1+ (2*1.339*lturb*xx).^2).^(11/6));
+% Von Karman turbulence PSD.
+PSDKarman=@(xx) ((2*lturb)/pi)*(1+(8/3)*(2*1.339*lturb*xx).^2) ./ ...
+                ((1+ (2*1.339*lturb*xx).^2).^(11/6));
 
 
 %% Construct system matrices.

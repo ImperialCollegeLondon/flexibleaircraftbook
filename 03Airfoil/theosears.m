@@ -9,6 +9,7 @@
 %                  function.
 %    theodorsen_rfa.m: RFA to Theodorsen's function.
 %    sears.m: Analytical expression for Sears's function.
+%    sears_rfa.m: RFA to Sears's function.
 %
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
 % Latest update: April 2023. 
@@ -85,16 +86,8 @@ legend('Theodorsen', 'Jones RFA', '2-state RFA', '4-state RFA')
 grid on
 
 %% Rational function approximations to Sears.
-deltak=0.02;
-k=0:deltak:40;  % Note that a much larger value of k_max is needed to 
-                % fit the asymptotic value through fitmagfrd (which does
-                % enforce that S goes to zero automatically).Wk=ones(size(k));
-Wk=ones(size(k));
-Wk(1:1/deltak)=100;
-
-sysse=frd(sears(k),k);
-sysse2=fitmagfrd(sysse,2,[],Wk);
-sysse4=fitmagfrd(sysse,4,[]);
+sysse2=sears_rfa(2);
+sysse4=sears_rfa(4);
 jones=1-tf([0.5 0], [1 0.13])-tf([0.5 0], [1 1]);
 
 % Bode plots.

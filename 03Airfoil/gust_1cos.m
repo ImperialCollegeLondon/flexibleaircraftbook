@@ -1,35 +1,37 @@
-%
-% gust_1cos: Compute 1-cos response for 1-DoF airfoil, using Jones's
-%            approximation for Theodorsen's lift deficiency function.
+% gust_1cos.m
+% 
+%         Compute 1-cos response for 1-DoF airfoil. Section 3.6.2 of
+%         Palacios & Cesnik's book.
 %
 % Dependencies:
+%    theodorsen_ajbj.m: aj & bj coefficients of RFA to Theodorsen.
 %    sears.m: Analytical expression for Sears's function.
 %
-% Copyright, Rafael Palacios, June 2018
+% Copyright, Rafael Palacios, May 2023
 %            r.palacios@imperial.ac.uk
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all, close all 
 
-% Coefficients in Jones's approximation for C(ik)
-a_1=0.165;
-a_2=0.335;
-b_1=0.0455;
-b_2=0.3;
+% RFA of Theodorsen's Lift deficiency function.
+[a,b]=theodorsen_ajbj(2);
+a_1=a(1); a_2=a(2); b_1=b(1);b_2=b(2);
 
+% Uncomment to use Jones's coefficients instead.
+% a_1=0.165; a_2=0.335; b_1=0.0455; b_2=0.3;
 
-% Obtain RFA approximation to Sears
-k=0:0.02:50;
-sysse=frd(sears(k),k);
-ssys5=fitmagfrd(sysse,5);
+% Obtain RFA approximation to Sears of order 5.
+ssys5=sears_rfa(5);
 
-mu=5;
+mu=5;     % mass parameter.
+dH=100;   % Discretization of the gust profile.
+NumH=10;  % Number of gusts lengths that the simulation runs for.
 
 for H=5:5:50;  % Gradient in semichords.
     
   % Create 1-cos gust velocity profile.
-  t=0:H/100:10*H;
-  wg(1:200)=0.5*(1-cos(pi*t(1:200)/H));
-  wg(201:1001)=0;
+  t=0:H/dH:NumH*H;
+  wg(1:2*dH)=0.5*(1-cos(pi*t(1:2*dH)/H));
+  wg(2*dH+1:NumH*dH+1)=0;
 
   subplot(3,1,1)
    plot(t,wg,'k','LineWidth',2), hold on

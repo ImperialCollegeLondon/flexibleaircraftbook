@@ -1,30 +1,30 @@
-% Function theodorsen_ajbj. 
+% Function sears_ajbj. 
 %  Compute the coefficients a_j and b_j that result when the RFA to 
-%  Theodorsen's lift deficiency function is written in the form 
-%  1-sum_j((aj*x)(bj+x).
+%  Sears's function is written in the form 1-sum_j((aj*x)(bj+x).
 %
 %  Inputs: Order of the approximation (Na).
-%  Outputs: a_j, b_j coefficients approximating C(ik).
+%  Outputs: a_j and b_j coefficients approximating S_0(ik).
 %
 % Dependencies:
-%    theodorsen_rfa.m: RFA to Theodorsen's lift deficiency function.
+%    sears_rfa.m: RFA to Sears's function.
 %
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
 % Latest update: May 2023. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function [a,b]=theodorsen_ajbj(Na)
+function [a,b]=sears_ajbj(Na)
 
-    % First, obtain the RFA to Theodorsen of order Na
-    sysC=theodorsen_rfa(Na)
+    % First, obtain the RFA to Sears of order Na
+    sysS0=sears_rfa(Na);
 
     % We rewrite this expression as 1-sum_j((aj*x)(bj+x). The new 
-    % coefficients result from a linear system from C(ik) written in terms
-    % of poles and zeros by equating both expressions. 
+    % coefficients result from a linear system from s_0(ik) written in 
+    % terms of poles and zeros by equating both expressions. 
     % This is done next usign symbolic algebra.
     
     % Next, the b_j coefficients are the poles of the SS obtained above.
-    b=-pole(sysC);
+    [z,p,k]=zpkdata(sysS0);
+    b=-p{1};
 
     % Polynomials are written as a function of x.
     syms x
@@ -44,9 +44,9 @@ function [a,b]=theodorsen_ajbj(Na)
     % Compute the coefficients of the polynomial in x, with known bj. 
     CC=subs(coeffs(collect(C1*C2,x),x),bj,b');
 
-    % Each coefficient results has to be equal to the numerator of the 
-    % zpk form of C(ik), which gives linear equations in aj 
-    eqs=poly(zero(sysC))/2 - CC(end:-1:1);
+    % Each coefficient  has to be equal to the numerator of the 
+    % zpk form of S0(ik), which gives linear equations in aj 
+    eqs=k*poly(z{1}) - CC(end:-1:1);
     
     % Solve the equation in the a_j coefficients.
     [AA,bb]=equationsToMatrix(eqs(1:Na),aj);
