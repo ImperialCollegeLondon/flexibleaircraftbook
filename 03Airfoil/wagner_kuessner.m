@@ -17,10 +17,14 @@ clear all, close all
 k=0:0.0005:20;
 theodm=@(x) theodorsen(x)-0.5;
 tsys=frd(theodm(k),k);
-tsys10=fitmagfrd(tsys,10)
+tsys10=fitmagfrd(tsys,10)   % Fit a SS of dimension 10.
 
+% Compute step response, including the 0.5 value at the limit.
 [yt10,xt10]=step(0.5+tsys10);
 
+
+% Repeat the process with Sears's function. Here the function goes to zero
+% at infinity.
 ssys=frd(sears(k),k);
 ssys10=fitmagfrd(ssys,10)
 [ys10,xs10]= step(ssys10);
