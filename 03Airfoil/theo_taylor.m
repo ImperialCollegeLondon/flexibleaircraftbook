@@ -72,7 +72,9 @@ A_4 = [[CLa0qs CLa1qs CLd1qs];
        [0      0      0]];
 
 % Build a sample of matrices
-k=0:0.05:5;
+ksmall=1e-6;
+klarge=5;
+k=[0 ksmall 0.02:0.02:4.98 klarge-ksmall klarge];
 for j=1:length(k)
     ik=1i*k(j);
     A(j,:,:)=A_0+ik*A_1+ik^2*A_2+(theodorsen(k(j))-1)*(A_3+ik*A_4);
@@ -113,9 +115,9 @@ subplot(2,3,6)
 
 % Identified functions
 A_0i=reshape(A(1,:,:),2,3);
-ksmall=1e-9; ik=1i*ksmall;
-temp=(ik*A_1+ik^2*A_2+(theodorsen(ksmall)-1)*(A_3+ik*A_4))/ik;
-A_1i=temp-double(eulergamma)*log(ik/2)*A_3
+A_1i=real(squeeze(A(end,:,:)-A(end-1,:,:))/(1i*ksmall))
+%temp=(ik*A_1+ik^2*A_2+(theodorsen(ksmall)-1)*(A_3+ik*A_4))/ik;
+%A_1i=temp-double(eulergamma)*log(ik/2)*A_3
 klarge=10; ik=1i*klarge;
-A_2i=(ik^2*A_2+(theodorsen(ksmall)-1)*(A_3+ik*A_4))/(ik^2);
+A_2i=real(squeeze(A(end,:,:))-A_0i-1i*k(end)*squeeze(A_1i(end,:,:))/(-k(end)^2));
 % eof   
