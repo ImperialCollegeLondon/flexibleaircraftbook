@@ -1,11 +1,19 @@
-% Function vortex_getsys
+% Function vortex_getsys.m
+%
 %  Compute state-space matrices of the vortex solution on the airfoil.
+%
 %  Inputs: 
 %    Nb: Number of panels on the airfoil
 %    Nw: Number of panels on the wake
 %    xa: Relative coordinates from the vortex locations to the reference point
 %        for moment calculations.
-% 
+%
+%  Outputs:
+%   Discrete-time state-space matrices.
+%
+% Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
+% Latest update: May 2023. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [A,B,C,D]=vortex_getsys(Nb,Nw,xa)
 
 % Define the value of the dissipation factor. These numbers have been
