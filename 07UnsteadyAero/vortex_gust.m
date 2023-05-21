@@ -4,8 +4,11 @@
 %  lift as obtained by the state-space vortex description and the 
 %  analytical formulas by Sears. 
 %
+% Dependencies:
+%    sears.m: Analytical expression for Sears's function.
+%
 % It supports Section 7.2.3 in Palacios & Cesnik (CUP, 2023)
-% https://www.cambridge.org/9781108420600
+%    https://www.cambridge.org/9781108420600
 %
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
 % Latest update: May 2023. 
