@@ -3,32 +3,42 @@
 %  Compute balanced solutions for the state-space vortex description.
 %
 %  It corresponds to Example 7.2 in Palacios & Cesnik (CUP, 2023)
-%   https://www.cambridge.org/9781108420600
+%   https://doi.org/10.1017/9781108354868
 %
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
-% Latest update: May 2023. 
+% Latest update: August 2023. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all, close all
 
 Nb=100;                        % Number of segments on aerofoil
-Nw=Nb*30;                      % Number of chordlengths in wake
+Nw=Nb*10;                      % Number of segments in wake
 dx=1/Nb;                       % Nondimensional panel length
+
+% Define non-dimensional coordinates from leading edge.
 x=dx/4:dx:1+Nw/Nb-((3*dx)/4);  % Coordinates of vortices (aerofoil/wake).
 xi=3*dx/4:dx:1-dx/4;           % Coordinates of the Nb collocation points.
 
-x0=1/4;                        % Rotate about the quarter chord.
+x_ea=0.25;                     % Pitch rotations about 0.25c.
+x_fh=0.75;                     % Flap hinge at 0.75c.
 
 wbode=0.001:0.001:2;           % Frequencies for the Bode plots.
 
 %% Aerofoil system equations in discrete time.
-[Aa,Ba,Ca,Da]=vortex_getsys(Nb,Nw,x-1/4);
+% Output is lift and moments about the 1/4 chord. 
+[Aa,Ba,Ca,Da]=vortex_getsys(Nb,Nw,x-1/4);  
 sysa=ss(Aa,Ba,Ca/2/pi,Da/2/pi,2/Nb);
 
-% Contribution of airfoil motions to input matrix.
-W(1:Nb,1)=1;
-W(1:Nb,2)=2*(xi'+x0-1/2)+1/Nb; % Check whether +1/(Nb) needs be removed.
-W(3*Nb/4+1:Nb,3)=1;
-W(3*Nb/4+1:Nb,4)=2*(transpose(xi(3*Nb/4+1:Nb))+1/(2*Nb)-3/4);
+% Contribution of pitch / flap motions to input matrix.
+W(1:Nb,1)= 1;
+W(1:Nb,2)= 2*(xi'-x_ea)+1/Nb;
+for i=1:Nb
+    if xi(i) >x_fh
+        W(i,3)=1;
+        W(i,4)=2*(xi(i)-x_fh)+1/Nb;
+    else
+        X(i,3:4)=0;
+    end
+end
 
 % Possibly include gust input to the system.
 if 0
