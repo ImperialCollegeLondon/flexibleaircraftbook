@@ -5,12 +5,15 @@
 %  It corresponds to Example 7.2 in Palacios & Cesnik (CUP, 2023)
 %   https://doi.org/10.1017/9781108354868
 %
+% Note: This code takes 20-30 minutes on a desktop computer. You can reduce
+%       Nb below to speed up your tests (at a small cost in accuracy).
+%
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
 % Latest update: August 2023. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all, close all
 
-Nb=100;                        % Number of segments on aerofoil
+Nb=40;                         % Number of segments on aerofoil
 Nw=Nb*30;                      % Number of segments in wake
 dx=1/Nb;                       % Nondimensional panel length
 
@@ -29,14 +32,16 @@ wbode=0.001:0.001:2;           % Frequencies for the Bode plots.
 sysa=ss(Aa,Ba,Ca/2/pi,Da/2/pi,2/Nb);
 
 % Contribution of pitch / flap motions to input matrix.
+% Note, expression in book includes 1/Nb, which corresponds to a 
+% first collocation point at the origin of coordinates.
 W(1:Nb,1)= 1;
-W(1:Nb,2)= 2*(xi'-x_ea)+1/Nb;
+W(1:Nb,2)= 2*(xi'-x_ea);
 for i=1:Nb
     if xi(i) >x_fh
         W(i,3)=1;
-        W(i,4)=2*(xi(i)-x_fh)+1/Nb;
+        W(i,4)=2*(xi(i)-x_fh);
     else
-        X(i,3:4)=0;
+        W(i,3:4)=0;
     end
 end
 
@@ -73,6 +78,7 @@ ylabel('Normalized HSV, \sigma_j','FontSize',16,'FontWeight','bold')
 
 
 %% Plot model reduction individual components.
+% Figs 7.13 and 7.14 in (Palacios & Cesnik, 2023)
 for k=1:2  % Repeat for each output in the system (lift, moment).
   figure(20+k)
   for j=1:4
