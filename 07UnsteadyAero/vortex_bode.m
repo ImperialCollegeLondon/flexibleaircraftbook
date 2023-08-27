@@ -1,6 +1,6 @@
 % vortex_bode.m
 %
-%  Compare transfer functions between alpha/beta and CL/CM using a 
+%  Compare transfer functions between alpha/delta and CL/CM using a 
 %  state-space vortex description and the analytical formulas.
 %
 % Dependencies:
@@ -8,10 +8,10 @@
 %                  function.
 %
 % It supports Section 7.2.4 in Palacios & Cesnik (CUP, 2023)
-%    https://www.cambridge.org/9781108420600
+%   https://doi.org/10.1017/9781108354868
 %
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
-% Latest update: May 2023. 
+% Latest update: August 2023. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 clear all, close all
 addpath('../03Airfoil/')
@@ -20,21 +20,30 @@ addpath('../03Airfoil/')
 Nb=20;                         % Number of segments along the aerofoil
 Nw=Nb*30;                      % Number of chordlengths in wake
 dx=1/Nb;                       % Nondimensional panel length
-x=dx/4:dx:1+Nw/Nb-((3*dx)/4);  % Coordinates of vortices (aerofoil/wake).
-xi=3*dx/4:dx:1-dx/4;           % Coordinates of collocation points
 
-x0=1/4;                        % Pitch about the quarter chord.
+% Define non-dimensional coordinates from leading edge.
+x=dx/4:dx:1+Nw/Nb-((3*dx)/4);  % Coordinates of vortices (aerofoil/wake).
+xi=3*dx/4:dx:1-dx/4;           % Coordinates of the Nb collocation points.
+
+x_ea=0.25;                     % Pitch rotations about 0.25c.
+x_fh=0.75;                     % Flap hinge at 0.75c.
 
 wbode=0.001:0.001:2;           % Frequencies for the Bode plots.
 
 %% System equations in discrete time. Eq. (7.20)
 [A,B1,C,D1]=vortex_getsys(Nb,Nw,x-1/4);
 
-% Input matrix with flap hinge at the 3/4 chord.
-W(1:Nb,1)=1;
-W(1:Nb,2)=2*(xi'-x0);
-W(3*Nb/4+1:Nb,3)=1;
-W(3*Nb/4+1:Nb,4)=2*(transpose(xi(3*Nb/4+1:Nb))-3/4);
+% Contribution of pitch / flap motions to input matrix.
+W(1:Nb,1)= 1;
+W(1:Nb,2)= 2*(xi'-x_ea)+1/Nb;
+for i=1:Nb
+    if xi(i) >x_fh
+        W(i,3)=1;
+        W(i,4)=2*(xi(i)-x_fh)+1/Nb;
+    else
+        X(i,3:4)=0;
+    end
+end
 
 B=B1(:,1:Nb)*W;
 D=D1(:,1:Nb)*W;
@@ -146,7 +155,7 @@ subplot(2,1,2)
  legend('Analytical',['N_b=' int2str(Nb) ', N_w/N_b=' int2str(Nw/Nb)])
  
  
-%% Beta to lift.
+%% Flap to lift.
 figure(13)
 
 % Analytical solution (flap hinge at the 3/4 chord).
@@ -180,7 +189,7 @@ subplot(2,1,2)
  plot(wbode,angle(Z)*180/pi,'k:','LineWidth',2)
 
  
-%% Beta to moment.
+%% Flap deflection to moment.
 figure(14)
 
 % Analytical solution (flap hinge at the 3/4 chord).
