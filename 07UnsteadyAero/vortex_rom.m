@@ -24,7 +24,7 @@ x_fh=0.75;                     % Flap hinge at 0.75c.
 wbode=0.001:0.001:2;           % Frequencies for the Bode plots.
 
 %% Aerofoil system equations in discrete time.
-% Output is lift and moments about the 1/4 chord (divided by 2*pi).
+% Output is lift and moments about the 1/4 chord. 
 [Aa,Ba,Ca,Da]=vortex_getsys(Nb,Nw,x-1/4);  
 sysa=ss(Aa,Ba,Ca/2/pi,Da/2/pi,2/Nb);
 
