@@ -11,7 +11,7 @@
 clear all, close all
 
 Nb=100;                        % Number of segments on aerofoil
-Nw=Nb*10;                      % Number of segments in wake
+Nw=Nb*30;                      % Number of segments in wake
 dx=1/Nb;                       % Nondimensional panel length
 
 % Define non-dimensional coordinates from leading edge.
@@ -98,9 +98,9 @@ subplot(2,4,1)
 subplot(2,4,2)
  title('input: d\alpha/ds','FontSize',12)
 subplot(2,4,3)
- title('input: \beta','FontSize',12)
+ title('input: \delta','FontSize',12)
 subplot(2,4,4)
- title('input: d\beta/ds','FontSize',12)
+ title('input: d\delta/ds','FontSize',12)
  legend('Full','N=2','N=3','N=4','FontSize',12)
 subplot(2,4,5)
  ylabel('Phase (deg)','FontSize',12,'FontWeight','bold')
