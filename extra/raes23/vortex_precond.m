@@ -59,9 +59,7 @@ if 1
     R2.Options.FreqIntervals = [0,5];
     R2 = process(R2);
     rsys = getrom(R2,Order=8,Method="matchDC");
-
-    save rsys
-
+    save('rsys.mat','rsys')
 else
     load rsys
 end
