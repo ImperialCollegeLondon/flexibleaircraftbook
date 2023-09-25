@@ -1,12 +1,14 @@
 % vortex_freqlimbal.m
 %
-%  Compute FL balanced solutions for the state-space vortex description.
+%  Compute frequency-limited balanced solutions for the state-space
+%  formulation of the 2D airfoil unsteady aerodynamics using the discrete 
+%  vortex method.
 %
 %  It has been modified from Example 7.2 in Palacios & Cesnik (CUP, 2023)
 %   https://doi.org/10.1017/9781108354868
 %
 %  A single dependency on each of the 3 degree of freedom is now included, 
-%  with derivatives introduce through a second-oder operator.
+%  with derivatives introduce through a second-order operator.
 %
 %  This results appeared in a RAeS'23 conference paper
 %

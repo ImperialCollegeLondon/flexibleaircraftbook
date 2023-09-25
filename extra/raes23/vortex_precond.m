@@ -1,7 +1,8 @@
 % vortex_precond.m
 %
-%  Loewner interpolation with frequency-limited precondonditioning
-%  for the state-space vortex description.
+%  Loewner interpolation with frequency-limited preconditioning for the 
+%  state-spaceformulation of the 2D airfoil unsteady aerodynamics using the
+%  discrete vortex method.
 %
 %  It has been modified from Example 7.2 in Palacios & Cesnik (CUP, 2023)
 %   https://doi.org/10.1017/9781108354868
@@ -52,14 +53,12 @@ for j=1:Nb
 end
 
 if 1
+    % Build the full system and its rrequency-limited balanced approximation. 
     sys=sysa*W;
-    
-    
-    %% Frequency-limited balancing
     R2 = reducespec(sys,"balanced");
     R2.Options.FreqIntervals = [0,5];
     R2 = process(R2);
-    rsys = getrom(R2,Order=Nrom,Method="matchDC");
+    rsys = getrom(R2,Order=8,Method="matchDC");
 
     save rsys
 
