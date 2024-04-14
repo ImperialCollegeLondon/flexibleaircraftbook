@@ -1,12 +1,16 @@
 %% Example 1.1 - Flapped Airfoil with vertical displacements
-% Flapped irfoil with steady aerodynamic model to demonstrate the three representations 
+% Flapped airfoil with steady aerodynamic model to demonstrate the three representations 
 % of LTI systems
 % 
-% Written by Rafa Palacios (<mailto:r.palacios@imperial.ac.uk r.palacios@imperial.ac.uk>)
+% Written by:
 % 
-% Latest update: March 2024
+% Rafael Palacios (r.palacios@imperial.ac.uk)
+% 
+% Latest update:
+% 
+% April 2024
 
-close all, clear all
+clear all
 
 % Define coefficients
 mu_a_overV=2;  % (\mu_a)/(V)
@@ -42,5 +46,6 @@ figure(3)
 for mu_a_overV=0:0.5:7.5;
     A=[[0 1]; [-omega_h^2 -mu_a_overV]];
     sys=ss(A,B,C,D);
-    plot(real(eig(sys)),imag(eig(sys)),'o'), hold on, grid on
+    plot(real(eig(sys)),imag(eig(sys)),'bo'), hold on, grid on
 end
+xlabel('Re(\lambda)'),ylabel('Im(\lambda)')
