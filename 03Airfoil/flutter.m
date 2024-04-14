@@ -9,7 +9,9 @@
 %    theodorsen_ajbj.m: Coefficients of the RFA of Theodorsen's lift 
 %                       deficiency function.
 %
-% Note: For solution in frequency-domain, see flutterpk.m 
+% Notes: 
+% 1) For solution in frequency-domain, see flutterpk.m 
+% 2) A live script version is also available, see flutter_live.mlx
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all, close all
 
