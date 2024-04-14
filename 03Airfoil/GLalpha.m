@@ -7,8 +7,10 @@
 %                  function.
 %
 % Written by: Rafael Palacios (r.palacios@imperial.ac.uk)
-% Latest update: April 2023. 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Latest update: April 2023.
+%
+% Note: A live script version is also available, see GLalpha_live.mlx
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all, close all
 
 % Define transfer function between AoA and lift.
