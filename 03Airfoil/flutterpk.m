@@ -8,11 +8,15 @@
 %
 % Copyright, Rafael Palacios, July 2022
 %            r.palacios@imperial.ac.uk
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Notes: 
+% 1) This is a frequency-domain alternative to flutter.m 
+% 2) A live script version is also available, see flutterpk_live.mlx
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear all, close all
 
 % Options:
-omega_ratio=0.05:0.05:2;    % Ratio of pitch/plunge frequencies.
+omega_ratio=0.01:0.01:2;    % Ratio of pitch/plunge frequencies.
 xalpha=[0 0.05 0.1 0.2];    % Nondimensional position (in c/2) of cg from ea.
 Ndof=2;                     % Number of degrees of freedom.
 Flag_plot=0;                % =1: Plot root locus for each parameter values.
@@ -56,7 +60,7 @@ for kxalpha=1:length(xalpha)
    
     kappa_g=2*[[-1 0];[(x_ea-x_ac)/(c/2) 2]];
 
-    jGAF=0; GAFk=[0:0.1:5]+.0001;  % GAFs at k=0 give problems.
+    jGAF=0; GAFk=[0:0.1:5];
     for kr=GAFk
         jGAF=jGAF+1;
         GAF(jGAF,:,:)=kappa_g*(theodorsen(kr) * (A_0+i*kr*A_4)+ ...
