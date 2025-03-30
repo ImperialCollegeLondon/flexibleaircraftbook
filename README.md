@@ -6,5 +6,7 @@ We welcome contributions amd feedback. If you can think of an improvement to the
 The *.m scripts should run on any recent version of matlab. They have been last checked in Matlab R2022b. You can also run them in Matlab online at: 
 [![Open in MATLAB Online](https://www.mathworks.com/images/responsive/global/open-in-matlab-online.svg)](https://matlab.mathworks.com/open/github/v1?repo=ImperialCollegeLondon/flexibleaircraftbook)
 
-Note: The scripts for the [SHARPy](https://www.imperial.ac.uk/aeroelastics/sharpy) simulations are now in the [sharpy_cases](https://github.com/ImperialCollegeLondon/sharpy_cases) repository. They need you to [install the latest version of SHARPy](https://ic-sharpy.readthedocs.io/en/latest/content/installation.html) first. 
+Changes from March 2025:
+1. A list of known [errata](https://github.com/ImperialCollegeLondon/flexibleaircraftbook/blob/main/errata.md) in the first edition of the book. 
+2. The scripts for the [SHARPy](https://www.imperial.ac.uk/aeroelastics/sharpy) simulations are now in the [sharpy_cases](https://github.com/ImperialCollegeLondon/sharpy_cases) repository. They need you to [install the latest version of SHARPy](https://ic-sharpy.readthedocs.io/en/latest/content/installation.html) first. 
 
